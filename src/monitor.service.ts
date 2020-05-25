@@ -3,20 +3,17 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class MonitorService {
-  
   monitorFreqency = 5000;
   cpuIssueThreshold = 50;
-  cpuEndpoints = [
-    'http://localhost:3000/cpu',
-  ]
+  cpuEndpoints = ['http://localhost:3000/serviceb/cpu'];
 
   constructor(
-      private httpService: HttpService,
-      @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
-    ) {
+    private httpService: HttpService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+  ) {
     setInterval(async () => {
       this.getCpuLoads();
-    }, this.monitorFreqency)
+    }, this.monitorFreqency);
   }
 
   async getCpuLoads() {
@@ -24,9 +21,9 @@ export class MonitorService {
       const res = await this.httpService.get(url).toPromise();
       const cpuLoad = res.data;
       if (cpuLoad > this.cpuIssueThreshold) {
-        this.logger.warn(`Cirtical CPU Load: ${cpuLoad} at ${url}`)
+        this.logger.warn(`Cirtical CPU Load: ${cpuLoad} at ${url}`);
       }
       return res.data;
-    })
+    });
   }
 }
