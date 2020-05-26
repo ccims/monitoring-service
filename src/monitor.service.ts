@@ -5,7 +5,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 export class MonitorService {
   monitorFreqency = 5000;
   cpuIssueThreshold = 50;
-  cpuEndpoints = ['http://localhost:3000/serviceb/cpu'];
+  cpuEndpoints = ['http://localhost:3000/cpu'];
 
   constructor(
     private httpService: HttpService,
