@@ -1,9 +1,15 @@
 import { Injectable, HttpService, Inject, Logger } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
+/*
+The monitoring service checks the cpu utilization load of the service b periodically
+with a certain frequency.
+*/
 @Injectable()
 export class MonitorService {
-  monitorFreqency = 5000;
+  //determines periodical check interval
+  monitorFrequency = 5000;
+  //max. threshold of received cpu utilization value
   cpuIssueThreshold = 50;
   cpuEndpoints = ['http://localhost:3000/serviceb/cpu'];
 
@@ -13,11 +19,15 @@ export class MonitorService {
   ) {
     setInterval(async () => {
       this.getCpuLoads();
-    }, this.monitorFreqency);
+    }, this.monitorFrequency);
   }
 
+  /*
+  Get request to service b in order to fetch the cpu utilization load of the microservice.
+  Thereupon a message is logged once the fetched cpu utilization load exceeds the threshold.
+  */
   async getCpuLoads() {
-    this.cpuEndpoints.map(async (url) => {
+    this.cpuEndpoints.map(async url => {
       const res = await this.httpService.get(url).toPromise();
       const cpuLoad = res.data;
       if (cpuLoad > this.cpuIssueThreshold) {
