@@ -11,7 +11,7 @@ export class MonitorService {
   monitorFrequency = 5000;
   //max. threshold of received cpu utilization value
   cpuIssueThreshold = 50;
-  cpuEndpoints = ['http://localhost:3000/serviceb/cpu'];
+  cpuEndpoints = ['http://localhost:3000/cpu'];
 
   constructor(
     private httpService: HttpService,
