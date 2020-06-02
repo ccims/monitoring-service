@@ -34,6 +34,14 @@
 $ npm install
 ```
 
+## Documentation
+```base
+# start monitoring by starting Server with
+$ npm run start
+
+# open cpu-report.josn under
+```
+
 ## Running the app
 
 ```bash

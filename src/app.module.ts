@@ -13,7 +13,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       format: winston.format.json(),
       transports: [
         new winston.transports.File({
-          filename: './static/cpu-repot.json',
+          filename: './static/cpu-report.json',
         }),
         new winston.transports.Console()
       ]
