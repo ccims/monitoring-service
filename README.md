@@ -35,9 +35,8 @@ $ npm install
 ```
 
 ## How to use it
-```bash
-Go to localhost:3100 and the monitor will automatically check the cpu load value of service b periodically.
-```
+- Go to `localhost:3100` and the monitor will automatically check the cpu load value of service b periodically.
+- Go to `http://localhost:3100/cpu-report.json` to get cpu report
 
 
 ## Support
