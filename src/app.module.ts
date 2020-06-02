@@ -3,6 +3,8 @@ import { AppController } from './app.controller';
 import { MonitorService } from './monitor.service';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -11,11 +13,14 @@ import * as winston from 'winston';
       format: winston.format.json(),
       transports: [
         new winston.transports.File({
-          filename: 'cpu-repot.json',
+          filename: './static/cpu-repot.json',
         }),
         new winston.transports.Console()
       ]
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'static')
+    })
   ],
   controllers: [AppController],
   providers: [MonitorService],
