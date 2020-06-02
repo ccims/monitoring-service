@@ -11,7 +11,7 @@ export class MonitorService {
   monitorFrequency = 5000;
   //max. threshold of received cpu utilization value
   cpuIssueThreshold = 50;
-  cpuEndpoints = ['http://localhost:3000/cpu'];
+  cpuEndpoints = ['http://localhost:3001/cpu'];
 
   constructor(
     private httpService: HttpService,
@@ -28,12 +28,18 @@ export class MonitorService {
   */
   async getCpuLoads() {
     this.cpuEndpoints.map(async url => {
-      const res = await this.httpService.get(url).toPromise();
-      const cpuLoad = res.data;
-      if (cpuLoad > this.cpuIssueThreshold) {
-        this.logger.warn(`Cirtical CPU Load: ${cpuLoad} at ${url}`);
+      try {
+        const res = await this.httpService.get(url).toPromise();
+        const cpuLoad = res.data;
+        if (cpuLoad > this.cpuIssueThreshold) {
+          this.logger.warn(`Cirtical CPU Load: ${cpuLoad} at ${url}`);
+        }
+        return res.data;
+      } catch (e) {
+        if (e.code === "ECONNREFUSED") {
+          console.log(`Request at ${url} failed`);
+        }
       }
-      return res.data;
     });
   }
 }
