@@ -5,6 +5,7 @@ import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { CpuEventsGateway } from './cpu-events.gateway';
 
 @Module({
   imports: [
@@ -18,11 +19,14 @@ import { ServeStaticModule } from '@nestjs/serve-static';
         new winston.transports.Console()
       ]
     }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'static')
-    })
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', 'static')
+    // })
   ],
   controllers: [AppController],
-  providers: [MonitorService],
+  providers: [
+    MonitorService,
+    CpuEventsGateway
+  ],
 })
 export class AppModule {}
