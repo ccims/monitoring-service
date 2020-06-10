@@ -22,6 +22,10 @@ export class CpuObeserver {
         }, this.cpuObservationEndpoint.cpuObservationFrequencyMilis);
     }
 
+    dispose() {
+        this.stopObersving();
+    }
+
     async checkCpuLoad() {
         const url = this.cpuObservationEndpoint.cpuUtilQueryEndpoint
         const status = new CpuObservationStatus(this.cpuObservationEndpoint.id);
