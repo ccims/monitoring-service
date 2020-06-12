@@ -1,7 +1,7 @@
 import { CpuObservationEndpoint, CpuObservationStatus } from 'cpu-monitoring-models';
 import { HttpService, Inject, Logger } from "@nestjs/common";
-import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 
+// Handles the periodic querying of the cpu status for a given endpoint
 export class CpuObeserver {
 
     interval: NodeJS.Timeout;
@@ -16,19 +16,22 @@ export class CpuObeserver {
     }
 
     private startObserving() {
+        // Initial Cpu Query
         this.checkCpuLoad();
+        // Query Cpu periodically
         this.interval = setInterval(async () => {
           this.checkCpuLoad();
         }, this.cpuObservationEndpoint.cpuObservationFrequencyMilis);
     }
 
+    // Stop the observer when not needed
     dispose() {
         this.stopObersving();
     }
 
     async checkCpuLoad() {
         const url = this.cpuObservationEndpoint.cpuUtilQueryEndpoint
-        const status = new CpuObservationStatus(this.cpuObservationEndpoint.id);
+        const status = new CpuObservationStatus(this.cpuObservationEndpoint.id);    // new status that will be emitted
         try {
             const res = await this.httpService.get(url).toPromise();
             status.cpuLoad = res.data;
@@ -40,6 +43,7 @@ export class CpuObeserver {
                 const message = `Cpu Utilization: ${status.cpuLoad}%`;
                 status.message = message;
             }
+            // notify about the status change
             this.notify(status);
         } catch (e) {
             if (e.code === "ECONNREFUSED") {

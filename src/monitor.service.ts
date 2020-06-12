@@ -4,7 +4,7 @@ import { CpuObeserver } from './cpu-observer';
 import { Subject } from 'rxjs';
 import { CpuObservationEndpoint, CpuObservationStatus } from 'cpu-monitoring-models';
 
-// Only for demo porpuse
+// Initial Endpoint for demo porpuse
 const initialEndpoint = new CpuObservationEndpoint(
   "Database Service",
   'http://localhost:3000/cpu',
@@ -13,8 +13,7 @@ const initialEndpoint = new CpuObservationEndpoint(
 )
 
 /*
-The monitoring service checks the cpu utilization load of the service b periodically
-with a certain frequency.
+  Monitoring Services handles the state of the current endpoints and creates CpuObeserver for each endpoint
 */
 @Injectable()
 export class MonitorService {
@@ -36,6 +35,7 @@ export class MonitorService {
     this.notifyListeners.next(status);
   }
 
+  // Create an oberserver for all endpoints
   private startAllObervers() {
     this.observers = {};
     Object.values(this.endpoints).forEach((endpoint) => this.observers[endpoint.id] = this.startObserver(endpoint));
@@ -63,6 +63,7 @@ export class MonitorService {
   }
 
   getEndpoints() {
+    // return endpoints as a list
     return Object.values(this.endpoints);
   }
 }

@@ -1,3 +1,8 @@
+# Monitoring CPU Usage
+
+Queries CPU Usage for given Services periodically. Reports status to the [monitoring-cpu-frontend](https://github.com/ccims/monitoring-cpu-frontend) where the given Services can be configured.
+
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
 </p>
