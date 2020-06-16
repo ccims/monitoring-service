@@ -1,7 +1,7 @@
 import { CpuObservationEndpoint, CpuObservationStatus } from 'cpu-monitoring-models';
 import { HttpService, Inject, Logger } from "@nestjs/common";
-import { IssueLoggingService } from './logging/logging.service';
-import { LogType } from './logging/log-type';
+import { LogType } from 'logging-format/dist/log-type';
+import { IssueLoggingService } from 'logging-module';
 
 // Handles the periodic querying of the cpu status for a given endpoint
 export class CpuObeserver {
@@ -44,7 +44,8 @@ export class CpuObeserver {
                     source: url,
                     target: null,
                     time: new Date().getTime(),
-                    type: LogType.Cpu
+                    type: LogType.CPU,
+                    message: message
                 });
                 status.message = message;
             } else {
@@ -57,6 +58,13 @@ export class CpuObeserver {
             if (e.code === "ECONNREFUSED") {
                 const message = `Endpoint ${url} cannot be reached`;
                 // this.logger.warn(message)
+                this.logger.log({
+                    source: url,
+                    target: null,
+                    time: new Date().getTime(),
+                    type: LogType.CPU,
+                    message: message
+                });
                 status.message = message
                 this.notify(status);
             }

@@ -3,8 +3,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { CpuObeserver } from './cpu-observer';
 import { Subject } from 'rxjs';
 import { CpuObservationEndpoint, CpuObservationStatus } from 'cpu-monitoring-models';
-import { IssueLoggingService } from './logging/logging.service';
-import { LogType } from './logging/log-type';
+import { IssueLoggingService } from 'logging-module';
 
 // Initial Endpoint for demo porpuse
 const initialEndpoint = new CpuObservationEndpoint(

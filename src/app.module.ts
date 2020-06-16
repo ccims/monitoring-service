@@ -6,8 +6,7 @@ import * as winston from 'winston';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { CpuEventsGateway } from './cpu-events.gateway';
-import { IssueLoggingService } from './logging/logging.service';
-import { LoggingModule } from './logging/logging.module';
+import { LoggingModule } from 'logging-module'
 
 @Module({
   imports: [
