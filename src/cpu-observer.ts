@@ -39,14 +39,7 @@ export class CpuObeserver {
             status.cpuLoad = res.data;
             if (status.cpuLoad > this.cpuObservationEndpoint.criticalCpuUtilThreshold) {
                 const message = `Cirtical CPU Load: ${status.cpuLoad} at ${url}`
-                // this.logger.warn(message);
-                this.logger.log({
-                    source: url,
-                    target: null,
-                    time: new Date().getTime(),
-                    type: LogType.CPU,
-                    message: message
-                });
+                this.log(url, message);
                 status.message = message;
             } else {
                 const message = `Cpu Utilization: ${status.cpuLoad}%`;
@@ -57,18 +50,21 @@ export class CpuObeserver {
         } catch (e) {
             if (e.code === "ECONNREFUSED") {
                 const message = `Endpoint ${url} cannot be reached`;
-                // this.logger.warn(message)
-                this.logger.log({
-                    source: url,
-                    target: null,
-                    time: new Date().getTime(),
-                    type: LogType.CPU,
-                    message: message
-                });
-                status.message = message
+                this.log(url, message);
+                status.message = message;
                 this.notify(status);
             }
         }
+    }
+
+    private log(url, message) {
+        this.logger.log({
+            source: url,
+            target: null,
+            time: new Date().getTime(),
+            type: LogType.CPU,
+            message: message
+        });
     }
 
     private stopObersving() {
