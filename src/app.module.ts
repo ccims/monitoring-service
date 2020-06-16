@@ -6,27 +6,30 @@ import * as winston from 'winston';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { CpuEventsGateway } from './cpu-events.gateway';
+import { IssueLoggingService } from './logging/logging.service';
+import { LoggingModule } from './logging/logging.module';
 
 @Module({
   imports: [
     HttpModule,
-    WinstonModule.forRoot({
-      format: winston.format.json(),
-      transports: [
-        new winston.transports.File({
-          filename: './static/cpu-report.json',
-        }),
-        new winston.transports.Console()
-      ]
-    }),
+    // WinstonModule.forRoot({
+    //   format: winston.format.json(),
+    //   transports: [
+    //     new winston.transports.File({
+    //       filename: './static/cpu-report.json',
+    //     }),
+    //     new winston.transports.Console()
+    //   ]
+    // }),
     // ServeStaticModule.forRoot({
     //   rootPath: join(__dirname, '..', 'static')
     // })
+    LoggingModule
   ],
   controllers: [AppController],
   providers: [
     MonitorService,
-    CpuEventsGateway
+    CpuEventsGateway,
   ],
 })
 export class AppModule {}

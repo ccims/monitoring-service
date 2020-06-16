@@ -1,5 +1,7 @@
 import { CpuObservationEndpoint, CpuObservationStatus } from 'cpu-monitoring-models';
 import { HttpService, Inject, Logger } from "@nestjs/common";
+import { IssueLoggingService } from './logging/logging.service';
+import { LogType } from './logging/log-type';
 
 // Handles the periodic querying of the cpu status for a given endpoint
 export class CpuObeserver {
@@ -9,7 +11,7 @@ export class CpuObeserver {
     constructor(
         private cpuObservationEndpoint: CpuObservationEndpoint,
         private httpService: HttpService,
-        private readonly logger: Logger,
+        private readonly logger: IssueLoggingService,
         private notify?: Function
     ) {
         this.startObserving();
@@ -37,7 +39,13 @@ export class CpuObeserver {
             status.cpuLoad = res.data;
             if (status.cpuLoad > this.cpuObservationEndpoint.criticalCpuUtilThreshold) {
                 const message = `Cirtical CPU Load: ${status.cpuLoad} at ${url}`
-                this.logger.warn(message);
+                // this.logger.warn(message);
+                this.logger.log({
+                    source: url,
+                    target: null,
+                    time: new Date().getTime(),
+                    type: LogType.Cpu
+                });
                 status.message = message;
             } else {
                 const message = `Cpu Utilization: ${status.cpuLoad}%`;
@@ -48,7 +56,7 @@ export class CpuObeserver {
         } catch (e) {
             if (e.code === "ECONNREFUSED") {
                 const message = `Endpoint ${url} cannot be reached`;
-                this.logger.warn(message)
+                // this.logger.warn(message)
                 status.message = message
                 this.notify(status);
             }

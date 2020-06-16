@@ -3,6 +3,8 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { CpuObeserver } from './cpu-observer';
 import { Subject } from 'rxjs';
 import { CpuObservationEndpoint, CpuObservationStatus } from 'cpu-monitoring-models';
+import { IssueLoggingService } from './logging/logging.service';
+import { LogType } from './logging/log-type';
 
 // Initial Endpoint for demo porpuse
 const initialEndpoint = new CpuObservationEndpoint(
@@ -25,7 +27,8 @@ export class MonitorService {
 
   constructor(
     private httpService: HttpService,
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    // @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+    private logger: IssueLoggingService
   ) {
     this.endpoints[initialEndpoint.id] = initialEndpoint;
     this.startAllObervers();
@@ -33,6 +36,7 @@ export class MonitorService {
 
   _notifyObservationListeners(status: CpuObservationStatus) {
     this.notifyListeners.next(status);
+
   }
 
   // Create an oberserver for all endpoints
