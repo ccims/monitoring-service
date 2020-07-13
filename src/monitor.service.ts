@@ -13,7 +13,7 @@ const initialEndpoint = new CpuObservationEndpoint(
   2000
 )
 
-/*
+/** 
   Monitoring Services handles the state of the current endpoints and creates CpuObserver for each endpoint
 */
 @Injectable()
@@ -38,7 +38,9 @@ export class MonitorService {
 
   }
 
-  // Create an observer for all endpoints
+  /**
+   * Create an observer for all endpoints
+   */
   private startAllObservers() {
     this.observers = {};
     Object.values(this.endpoints).forEach((endpoint) => this.observers[endpoint.id] = this.startObserver(endpoint));

@@ -58,6 +58,7 @@ export class CpuObserver {
     }
     /**
      * Creates the Log which is send to the log-receiver, with the too high Cpu Load.  
+     * 
      * @param url where the problem occurred.
      * @param message what the problem is.
      * @param cpuLoad the CpuLoad for the specific data of this Log
@@ -80,6 +81,7 @@ export class CpuObserver {
     }
     /**
      * Creates the Log which is send to the log-receiver, without specific data.
+     * 
      * @param url  where the problem occurred.
      * @param message what the problem is.
      */
