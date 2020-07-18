@@ -1,10 +1,10 @@
+import { HttpService } from "@nestjs/common";
 import { CpuObservationEndpoint, CpuObservationStatus } from 'cpu-monitoring-models';
-import { HttpService, Inject, Logger } from "@nestjs/common";
-import { LogType } from 'logging-format/dist/log-type';
+import { CpuUtilizationLogData, LogType } from "logging-format";
 import { IssueLoggingService } from 'logging-module';
 
 // Handles the periodic querying of the cpu status for a given endpoint
-export class CpuObeserver {
+export class CpuObserver {
 
     interval: NodeJS.Timeout;
 
@@ -22,13 +22,13 @@ export class CpuObeserver {
         this.checkCpuLoad();
         // Query Cpu periodically
         this.interval = setInterval(async () => {
-          this.checkCpuLoad();
+            this.checkCpuLoad();
         }, this.cpuObservationEndpoint.cpuObservationFrequencyMilis);
     }
 
     // Stop the observer when not needed
     dispose() {
-        this.stopObersving();
+        this.stopObserving();
     }
 
     async checkCpuLoad() {
@@ -38,8 +38,8 @@ export class CpuObeserver {
             const res = await this.httpService.get(url).toPromise();
             status.cpuLoad = res.data;
             if (status.cpuLoad > this.cpuObservationEndpoint.criticalCpuUtilThreshold) {
-                const message = `Cirtical CPU Load: ${status.cpuLoad} at ${url}`
-                this.log(url, message);
+                const message = `Critical CPU Load: ${status.cpuLoad} at ${url}`
+                this.logWithData(url, message, status.cpuLoad);
                 status.message = message;
             } else {
                 const message = `Cpu Utilization: ${status.cpuLoad}%`;
@@ -56,18 +56,53 @@ export class CpuObeserver {
             }
         }
     }
+    /**
+     * Creates the Log which is send to the log-receiver, with the too high Cpu Load.  
+     * 
+     * @param url where the problem occurred.
+     * @param message what the problem is.
+     * @param cpuLoad the CpuLoad for the specific data of this Log
+     */
+    private logWithData(url, message, cpuLoad: number) {
 
-    private log(url, message) {
+        //Data of a too high Cpu utilization
+        let cpuErrorData: CpuUtilizationLogData = {
+            cpuUtilization: cpuLoad
+        }
+
         this.logger.log({
             source: url,
-            target: null,
+            detector: null,
             time: new Date().getTime(),
             type: LogType.CPU,
-            message: message
+            message: message,
+            data: cpuErrorData
+        });
+    }
+    /**
+     * Creates the Log which is send to the log-receiver, without specific data.
+     * 
+     * @param url  where the problem occurred.
+     * @param message what the problem is.
+     */
+    private log(url, message) {
+
+        //declare an impossible outcome, because actual Cpu load isn't given
+        let cpuErrorData: CpuUtilizationLogData = {
+            cpuUtilization: -1
+        }
+
+        this.logger.log({
+            source: url,
+            detector: null,
+            time: new Date().getTime(),
+            type: LogType.CPU,
+            message: message,
+            data: cpuErrorData
         });
     }
 
-    private stopObersving() {
+    private stopObserving() {
         clearInterval(this.interval);
     }
 }

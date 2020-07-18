@@ -1,11 +1,11 @@
 import { Injectable, HttpService, Inject, Logger } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { CpuObeserver } from './cpu-observer';
+import { CpuObserver } from './cpu-observer';
 import { Subject } from 'rxjs';
 import { CpuObservationEndpoint, CpuObservationStatus } from 'cpu-monitoring-models';
 import { IssueLoggingService } from 'logging-module';
 
-// Initial Endpoint for demo porpuse
+// Initial Endpoint for demo purpose
 const initialEndpoint = new CpuObservationEndpoint(
   "Database Service",
   'http://localhost:3000/cpu',
@@ -13,14 +13,14 @@ const initialEndpoint = new CpuObservationEndpoint(
   2000
 )
 
-/*
-  Monitoring Services handles the state of the current endpoints and creates CpuObeserver for each endpoint
+/** 
+  Monitoring Services handles the state of the current endpoints and creates CpuObserver for each endpoint
 */
 @Injectable()
 export class MonitorService {
 
   private endpoints: { [id: string] : CpuObservationEndpoint } = {};
-  private observers: { [id: string] : CpuObeserver };
+  private observers: { [id: string] : CpuObserver };
 
   public notifyListeners = new Subject<CpuObservationStatus>();
 
@@ -30,7 +30,7 @@ export class MonitorService {
     private logger: IssueLoggingService
   ) {
     this.endpoints[initialEndpoint.id] = initialEndpoint;
-    this.startAllObervers();
+    this.startAllObservers();
   }
 
   _notifyObservationListeners(status: CpuObservationStatus) {
@@ -38,14 +38,16 @@ export class MonitorService {
 
   }
 
-  // Create an oberserver for all endpoints
-  private startAllObervers() {
+  /**
+   * Create an observer for all endpoints
+   */
+  private startAllObservers() {
     this.observers = {};
     Object.values(this.endpoints).forEach((endpoint) => this.observers[endpoint.id] = this.startObserver(endpoint));
   }
 
-  private startObserver(endpoint: CpuObservationEndpoint): CpuObeserver {
-    return new CpuObeserver(endpoint, this.httpService, this.logger, this._notifyObservationListeners.bind(this))
+  private startObserver(endpoint: CpuObservationEndpoint): CpuObserver {
+    return new CpuObserver(endpoint, this.httpService, this.logger, this._notifyObservationListeners.bind(this))
   }
 
   addObservingEndpoint(endpoint: CpuObservationEndpoint) {
