@@ -3,7 +3,9 @@ import { CpuObservationEndpoint, CpuObservationStatus } from 'cpu-monitoring-mod
 import { CpuUtilizationLogData, LogType } from "logging-format";
 import { IssueLoggingService } from 'logging-module';
 
-// Handles the periodic querying of the cpu status for a given endpoint
+/**
+ * Handles the periodic querying of the cpu status for a given endpoint
+ */
 export class CpuObserver {
 
     interval: NodeJS.Timeout;
@@ -17,6 +19,9 @@ export class CpuObserver {
         this.startObserving();
     }
 
+    /**
+     * observe the cpu periodically, period is dependent on the endpoint object
+     */
     private startObserving() {
         // Initial Cpu Query
         this.checkCpuLoad();
@@ -26,11 +31,16 @@ export class CpuObserver {
         }, this.cpuObservationEndpoint.cpuObservationFrequencyMilis);
     }
 
-    // Stop the observer when not needed
+    /**
+     * Stop the observer when not needed
+     */
     dispose() {
         this.stopObserving();
     }
-
+    /**
+     * this method sends a get request to the specified cpu endpoint. Dependent on the cpu load of the endpoint
+     * a different message is displayed on the console. 
+     */
     async checkCpuLoad() {
         const url = this.cpuObservationEndpoint.cpuUtilQueryEndpoint
         const status = new CpuObservationStatus(this.cpuObservationEndpoint.id);    // new status that will be emitted
@@ -101,7 +111,6 @@ export class CpuObserver {
             data: cpuErrorData
         });
     }
-
     private stopObserving() {
         clearInterval(this.interval);
     }
