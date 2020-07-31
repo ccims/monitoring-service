@@ -1,6 +1,6 @@
 import { CpuObservationEndpoint, CpuObservationStatus } from 'cpu-monitoring-models';
 import { HttpService, Inject, Logger } from "@nestjs/common";
-import { LogType } from 'logging-format/dist/log-type';
+import { LogType, LogMessageFormat } from 'logging-format';
 import { IssueLoggingService } from 'logging-module';
 
 // Handles the periodic querying of the cpu status for a given endpoint
@@ -38,8 +38,12 @@ export class CpuObeserver {
             const res = await this.httpService.get(url).toPromise();
             status.cpuLoad = res.data;
             if (status.cpuLoad > this.cpuObservationEndpoint.criticalCpuUtilThreshold) {
-                const message = `Cirtical CPU Load: ${status.cpuLoad} at ${url}`
-                this.log(url, message);
+                const message = `Cirtical CPU Load: ${status.cpuLoad} at ${url}`;
+                this.log(url, message, status.cpuLoad);
+                status.message = message;
+            } else if (status.cpuLoad < this.cpuObservationEndpoint.minimalCpuUtilThreshold) {
+                const message = `CPU Load: ${status.cpuLoad} at ${url} is below the minimum threshold`;
+                this.log(url, message, status.cpuLoad);
                 status.message = message;
             } else {
                 const message = `Cpu Utilization: ${status.cpuLoad}%`;
@@ -50,21 +54,24 @@ export class CpuObeserver {
         } catch (e) {
             if (e.code === "ECONNREFUSED") {
                 const message = `Endpoint ${url} cannot be reached`;
-                this.log(url, message);
+                this.log(url, message, status.cpuLoad);
                 status.message = message;
                 this.notify(status);
             }
         }
     }
 
-    private log(url, message) {
+    private log(url, message, cpu) {
         this.logger.log({
             source: url,
-            target: null,
+            detector: null,
             time: new Date().getTime(),
             type: LogType.CPU,
+            data: {
+                cpuUtilization: cpu
+            },
             message: message
-        });
+        } as LogMessageFormat);
     }
 
     private stopObersving() {

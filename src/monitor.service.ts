@@ -10,6 +10,7 @@ const initialEndpoint = new CpuObservationEndpoint(
   "Database Service",
   'http://localhost:3000/cpu',
   50,
+  0,
   2000
 )
 
