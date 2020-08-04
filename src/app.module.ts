@@ -7,6 +7,7 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { CpuEventsGateway } from './cpu-events.gateway';
 import { LoggingModule } from 'logging-module'
+import { TestController } from './test/test.controller';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { LoggingModule } from 'logging-module'
     // })
     LoggingModule
   ],
-  controllers: [AppController],
+  controllers: [AppController, TestController],
   providers: [
     MonitorService,
     CpuEventsGateway,
