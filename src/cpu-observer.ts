@@ -1,10 +1,12 @@
+import { HttpService } from "@nestjs/common";
 import { CpuObservationEndpoint, CpuObservationStatus } from 'cpu-monitoring-models';
-import { HttpService, Inject, Logger } from "@nestjs/common";
-import { LogType, LogMessageFormat } from 'logging-format';
+import { CpuUtilizationLogData, LogType, LogMessageFormat } from "logging-format";
 import { IssueLoggingService } from 'logging-module';
 
-// Handles the periodic querying of the cpu status for a given endpoint
-export class CpuObeserver {
+/**
+ * Handles the periodic querying of the cpu status for a given endpoint
+ */
+export class CpuObserver {
 
     interval: NodeJS.Timeout;
 
@@ -18,20 +20,22 @@ export class CpuObeserver {
     }
 
     /**
-     * Start observing the Service that should be monitored
+     * observe the cpu periodically, period is dependent on the endpoint object
      */
     private startObserving() {
         // Initial Cpu Query
         this.checkCpuLoad();
         // Query Cpu periodically
         this.interval = setInterval(async () => {
-          this.checkCpuLoad();
+            this.checkCpuLoad();
         }, this.cpuObservationEndpoint.cpuObservationFrequencyMilis);
     }
 
-    /** Stop the observer when not needed */
+    /**
+     * Stop the observer when not needed
+     */
     dispose() {
-        this.stopObersving();
+        this.stopObserving();
     }
 
     /**
@@ -102,7 +106,7 @@ export class CpuObeserver {
     /**
      * Clears interval to stop observing the endpoint
      */
-    private stopObersving() {
+    private stopObserving() {
         clearInterval(this.interval);
     }
 }
