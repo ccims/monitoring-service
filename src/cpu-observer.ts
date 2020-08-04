@@ -17,6 +17,9 @@ export class CpuObeserver {
         this.startObserving();
     }
 
+    /**
+     * Start observing the Service that should be monitored
+     */
     private startObserving() {
         // Initial Cpu Query
         this.checkCpuLoad();
@@ -26,11 +29,15 @@ export class CpuObeserver {
         }, this.cpuObservationEndpoint.cpuObservationFrequencyMilis);
     }
 
-    // Stop the observer when not needed
+    /** Stop the observer when not needed */
     dispose() {
         this.stopObersving();
     }
 
+    /**
+     * Querys the CPU Utilization of the Service that should be monitored
+     * Reports a log message with the cpu load
+     */
     async checkCpuLoad() {
         const url = this.cpuObservationEndpoint.cpuUtilQueryEndpoint
         const status = new CpuObservationStatus(this.cpuObservationEndpoint.id);    // new status that will be emitted
@@ -54,17 +61,35 @@ export class CpuObeserver {
         } catch (e) {
             if (e.code === "ECONNREFUSED") {
                 const message = `Endpoint ${url} cannot be reached`;
-                this.log(url, message, status.cpuLoad);
+                // Report Error 
+                this.logger.log({
+                    source: url,
+                    detector: "CPU Monitor",
+                    time: new Date().getTime(),
+                    type: LogType.ERROR,
+                    data: {
+                        expected: null,
+                        result: "ECONNREFUSED"
+                    },
+                });
+                
                 status.message = message;
                 this.notify(status);
             }
         }
     }
 
+    /**
+     * send a CPU Utilization Log Message
+     * 
+     * @param url of the service
+     * @param message of the log
+     * @param cpu utilization that was recorded
+     */
     private log(url, message, cpu) {
         this.logger.log({
             source: url,
-            detector: null,
+            detector: "CPU Monitor",
             time: new Date().getTime(),
             type: LogType.CPU,
             data: {
@@ -74,6 +99,9 @@ export class CpuObeserver {
         } as LogMessageFormat);
     }
 
+    /**
+     * Clears interval to stop observing the endpoint
+     */
     private stopObersving() {
         clearInterval(this.interval);
     }
