@@ -6,11 +6,13 @@ import * as winston from 'winston';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { CpuEventsGateway } from './cpu-events.gateway';
-import { LoggingModule } from 'logging-module'
+import { LoggingModule } from 'logging-module';
+import {ConfigModule} from '@nestjs/config';
 
 @Module({
   imports: [
-    HttpModule,
+    HttpModule, 
+    ConfigModule.forRoot(),
     // WinstonModule.forRoot({
     //   format: winston.format.json(),
     //   transports: [
