@@ -10,7 +10,9 @@ export class CpuEventsGateway {
     constructor(private monitorService: MonitorService) {
         // Listen to Status Changes from Endpoints and emit the events for the corresponding socket
         monitorService.notifyListeners.subscribe((status) => {
-            this.server.emit(status.observationEndpointid, status)
+            if (this.server) {
+                this.server.emit(status.observationEndpointid, status)
+            }
         })
     }
 }

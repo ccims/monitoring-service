@@ -5,13 +5,6 @@ import { Subject } from 'rxjs';
 import { CpuObservationEndpoint, CpuObservationStatus } from 'cpu-monitoring-models';
 import { IssueLoggingService } from 'logging-module';
 
-// Initial Endpoint for demo purpose
-const initialEndpoint = new CpuObservationEndpoint(
-  "Database Service",
-  'http://localhost:3000/cpu',
-  50,
-  2000
-)
 
 /** 
   Monitoring Services handles the state of the current endpoints and creates CpuObserver for each endpoint
@@ -29,7 +22,7 @@ export class MonitorService {
     // @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
     private logger: IssueLoggingService
   ) {
-    this.endpoints[initialEndpoint.id] = initialEndpoint;
+
     this.startAllObservers();
   }
 

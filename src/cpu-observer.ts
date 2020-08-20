@@ -1,6 +1,6 @@
 import { HttpService } from "@nestjs/common";
 import { CpuObservationEndpoint, CpuObservationStatus } from 'cpu-monitoring-models';
-import { CpuUtilizationLogData, LogType } from "logging-format";
+import { CpuUtilizationLogData, LogType, LogMessageFormat } from "logging-format";
 import { IssueLoggingService } from 'logging-module';
 
 /**
@@ -37,9 +37,10 @@ export class CpuObserver {
     dispose() {
         this.stopObserving();
     }
+
     /**
-     * this method sends a get request to the specified cpu endpoint. Dependent on the cpu load of the endpoint
-     * a different message is displayed on the console. 
+     * Querys the CPU Utilization of the Service that should be monitored
+     * Reports a log message with the cpu load
      */
     async checkCpuLoad() {
         const url = this.cpuObservationEndpoint.cpuUtilQueryEndpoint
@@ -48,8 +49,12 @@ export class CpuObserver {
             const res = await this.httpService.get(url).toPromise();
             status.cpuLoad = res.data;
             if (status.cpuLoad > this.cpuObservationEndpoint.criticalCpuUtilThreshold) {
-                const message = `Critical CPU Load: ${status.cpuLoad} at ${url}`
-                this.logWithData(url, message, status.cpuLoad);
+                const message = `Cirtical CPU Load: ${status.cpuLoad} at ${url}`;
+                this.log(url, message, status.cpuLoad);
+                status.message = message;
+            } else if (status.cpuLoad < this.cpuObservationEndpoint.minimalCpuUtilThreshold) {
+                const message = `CPU Load: ${status.cpuLoad} at ${url} is below the minimum threshold`;
+                this.log(url, message, status.cpuLoad);
                 status.message = message;
             } else {
                 const message = `Cpu Utilization: ${status.cpuLoad}%`;
@@ -60,57 +65,47 @@ export class CpuObserver {
         } catch (e) {
             if (e.code === "ECONNREFUSED") {
                 const message = `Endpoint ${url} cannot be reached`;
-                this.log(url, message);
+                // Report Error 
+                this.logger.log({
+                    source: url,
+                    detector: "CPU Monitor",
+                    time: new Date().getTime(),
+                    type: LogType.ERROR,
+                    data: {
+                        expected: null,
+                        result: "ECONNREFUSED"
+                    },
+                });
+                
                 status.message = message;
                 this.notify(status);
             }
         }
     }
+
     /**
-     * Creates the Log which is send to the log-receiver, with the too high Cpu Load.  
+     * send a CPU Utilization Log Message
      * 
-     * @param url where the problem occurred.
-     * @param message what the problem is.
-     * @param cpuLoad the CpuLoad for the specific data of this Log
+     * @param url of the service
+     * @param message of the log
+     * @param cpu utilization that was recorded
      */
-    private logWithData(url, message, cpuLoad: number) {
-
-        //Data of a too high Cpu utilization
-        let cpuErrorData: CpuUtilizationLogData = {
-            cpuUtilization: cpuLoad
-        }
-
+    private log(url, message, cpu) {
         this.logger.log({
             source: url,
-            detector: null,
+            detector: "CPU Monitor",
             time: new Date().getTime(),
             type: LogType.CPU,
-            message: message,
-            data: cpuErrorData
-        });
+            data: {
+                cpuUtilization: cpu
+            },
+            message: message
+        } as LogMessageFormat);
     }
+
     /**
-     * Creates the Log which is send to the log-receiver, without specific data.
-     * 
-     * @param url  where the problem occurred.
-     * @param message what the problem is.
+     * Clears interval to stop observing the endpoint
      */
-    private log(url, message) {
-
-        //declare an impossible outcome, because actual Cpu load isn't given
-        let cpuErrorData: CpuUtilizationLogData = {
-            cpuUtilization: -1
-        }
-
-        this.logger.log({
-            source: url,
-            detector: null,
-            time: new Date().getTime(),
-            type: LogType.CPU,
-            message: message,
-            data: cpuErrorData
-        });
-    }
     private stopObserving() {
         clearInterval(this.interval);
     }
