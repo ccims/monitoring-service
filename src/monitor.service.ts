@@ -1,9 +1,8 @@
-import { Injectable, HttpService, Inject, Logger } from '@nestjs/common';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { CpuObserver } from './cpu-observer';
-import { Subject } from 'rxjs';
+import { HttpService, Injectable } from '@nestjs/common';
 import { CpuObservationEndpoint, CpuObservationStatus } from 'cpu-monitoring-models';
 import { IssueLoggingService } from 'logging-module';
+import { Subject } from 'rxjs';
+import { CpuObserver } from './cpu-observer';
 
 
 /** 
@@ -19,7 +18,6 @@ export class MonitorService {
 
   constructor(
     private httpService: HttpService,
-    // @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
     private logger: IssueLoggingService
   ) {
 
@@ -32,7 +30,7 @@ export class MonitorService {
   }
 
   /**
-   * Create an observer for all endpoints
+   * Creates an observer for each endpoint
    */
   private startAllObservers() {
     this.observers = {};
@@ -40,8 +38,10 @@ export class MonitorService {
   }
 
   /**
-   * create a new CpuObserver with the specified data
-   * @param endpoint the given cpu endpoint
+   * Creates a new CpuObserver with the specified data
+   * 
+   * @param endpoint CPU endpoint that is going to be observed
+   * 
    * @returns a new cpu observer with the endpoint data
    */
   private startObserver(endpoint: CpuObservationEndpoint): CpuObserver {
@@ -49,16 +49,18 @@ export class MonitorService {
   }
 
   /**
-   * adding a cpu observer for the specified endpoint
-   * @param endpoint the given cpu endpoint
+   * adding a CPU observer for the specified endpoint
+   * 
+   * @param endpoint CPU endpoint that is going to be observed
    */
   addObservingEndpoint(endpoint: CpuObservationEndpoint) {
     this.endpoints[endpoint.id] = endpoint;
     this.observers[endpoint.id] = this.startObserver(endpoint);
   }
   /**
-   * creating a enw endpoint and creating a new endpoint with the endpoint data
-   * @param endpoint the given cpu endpoint
+   * Updates place where old endpoint was saved and restarts observer with updated endpoint
+   * 
+   * @param endpoint observed CPU endpoint that is being updated
    */
   editObservingEndpoint(endpoint: CpuObservationEndpoint) {
     this.endpoints[endpoint.id] = endpoint;
@@ -66,8 +68,9 @@ export class MonitorService {
     this.observers[endpoint.id] = this.startObserver(endpoint);
   }
   /**
-   * deleting the given cpu endpoint
-   * @param endpoint the given cpu endpoint
+   * Stops observing given CPU endpoint and deletes it from list
+   * 
+   * @param endpoint CPU endpoint that will be deleted
    */
   deleteObservingEndpoint(endpoint: CpuObservationEndpoint) {
     this.observers[endpoint.id].dispose();
@@ -76,8 +79,9 @@ export class MonitorService {
   }
 
   /**
-   * return the end points as a list
-   * @returns list of endpoints
+   * Get all observed CPU endpoints as a list
+   * 
+   * @returns list of observed CPU endpoints
    */
   getEndpoints() {
     return Object.values(this.endpoints);
