@@ -1,7 +1,10 @@
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { MonitorService } from './monitor.service';
 
-
+/**
+ * emits event for each observation endpoint so frontend (or other services) can receive status of 
+ * each observed endpoint
+ */
 @WebSocketGateway()
 export class CpuEventsGateway {
 
