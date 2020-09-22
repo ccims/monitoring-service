@@ -41,7 +41,6 @@ export class MonitorService {
    * Creates a new CpuObserver with the specified data
    * 
    * @param endpoint CPU endpoint that is going to be observed
-   * 
    * @returns a new cpu observer with the endpoint data
    */
   private startObserver(endpoint: CpuObservationEndpoint): CpuObserver {

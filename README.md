@@ -1,6 +1,6 @@
 # Monitoring CPU Usage
 
-Queries CPU Usage for given Services periodically. Reports status to the [Combines Monitoirng Frontend](https://github.com/ccims/monitoring-frontend) where the given Services can be configured.
+Queries CPU Usage for given Services periodically. Reports status to the [Combined Monitoring Frontend](https://github.com/ccims/monitoring-frontend) where the given Services can be configured.
 
 
 <p align="center">

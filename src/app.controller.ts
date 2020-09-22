@@ -11,7 +11,7 @@ export class AppController {
   constructor(private readonly appService: MonitorService) { }
 
   /**
-   * Get requests that attempts to fetch all endpoints will be handled here
+   * Get request that attempts to fetch all endpoints will be handled here
    * 
    * @returns list of all observed CPU endpoints
    */
@@ -23,6 +23,7 @@ export class AppController {
    * Post requests to this endpoint will be handled here and adds the specified endpoint
    * 
    * @param endpoint the endpoint object specified in the post body that will be added for observation
+   * @returns updated list of all observed CPU endpoints including the added one
    */
   @Post()
   addObservationEndpoint(@Body() endpoint: CpuObservationEndpoint) {
@@ -34,6 +35,7 @@ export class AppController {
    * endpoint with new data
    * 
    * @param endpoint the endpoint object specified in the post body that will be updated
+   * @returns updated list of all observed CPU endpoints including the edited one
    */
   @Post('/edit')
   editObservationEndpoint(@Body() endpoint: CpuObservationEndpoint) {
@@ -44,6 +46,7 @@ export class AppController {
    * Post requests to the endpoint /delete will be handled here and deletes an endpoint
    * 
    * @param endpoint the endpoint object specified in the post body that will be deleted
+   * @returns list of all observed CPU endpoints without the deleted endpoint
    */
   @Post('/delete')
   deleteObservationEndpoint(@Body() endpoint: CpuObservationEndpoint) {
