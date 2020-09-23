@@ -1,10 +1,12 @@
 
+# Monitoring CPU Usage
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/ccims/overview-and-documentation/c97db39633418d2a0d4e5690a810d62fe5ff5247/app_logos/logo_final_6.25p.svg">
 </p>
 
 ## Description
-The CPU-Tracking-Monitor tracks the CPU utilization of services.
+Queries CPU Usage for given Services periodically. Reports status to the [Combined Monitoring Frontend](https://github.com/ccims/monitoring-frontend) where the given Services can be configured.
 
 ## Installation
 
@@ -13,6 +15,5 @@ $ npm install
 ```
 
 ## How to use it
-- Go to `localhost:3100` and the monitor will automatically check the cpu load value of the database service periodically.
-- Go to `http://localhost:3100/cpu-report.json` to get cpu report
+Read our [Github pages Documentation](https://ccims.github.io/overview-and-documentation/cpu-tracking-monitor) of the CPU Tracking Monitoring Service for a full despription of all functionalities.
 
