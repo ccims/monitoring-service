@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Delete } from '@nestjs/common';
-import { MonitorService } from './monitor.service';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { CpuObservationEndpoint } from 'cpu-monitoring-models';
+import { MonitorService } from './monitor.service';
 
 /**
  * Controller to receive requests to add, edit and delete the cpu observation endpoints
@@ -11,7 +11,9 @@ export class AppController {
   constructor(private readonly appService: MonitorService) { }
 
   /**
-   * Get requests that attempt to fetch the endpoints will be handled here
+   * Get request that attempts to fetch all endpoints will be handled here
+   * 
+   * @returns list of all observed CPU endpoints
    */
   @Get()
   getObservationEndpoints() {
@@ -19,7 +21,9 @@ export class AppController {
   }
   /**
    * Post requests to this endpoint will be handled here and adds the specified endpoint
-   * @param endpoint the endpoint object specified in the post body
+   * 
+   * @param endpoint the endpoint object specified in the post body that will be added for observation
+   * @returns updated list of all observed CPU endpoints including the added one
    */
   @Post()
   addObservationEndpoint(@Body() endpoint: CpuObservationEndpoint) {
@@ -29,7 +33,9 @@ export class AppController {
   /**
    * Post requests to the endpoint /edit will be handled here and it edits the spcified 
    * endpoint with new data
-   * @param endpoint the endpoint object specified in the post body
+   * 
+   * @param endpoint the endpoint object specified in the post body that will be updated
+   * @returns updated list of all observed CPU endpoints including the edited one
    */
   @Post('/edit')
   editObservationEndpoint(@Body() endpoint: CpuObservationEndpoint) {
@@ -38,7 +44,9 @@ export class AppController {
   }
   /**
    * Post requests to the endpoint /delete will be handled here and deletes an endpoint
-   * @param endpoint the endpoint object specified in the post body
+   * 
+   * @param endpoint the endpoint object specified in the post body that will be deleted
+   * @returns list of all observed CPU endpoints without the deleted endpoint
    */
   @Post('/delete')
   deleteObservationEndpoint(@Body() endpoint: CpuObservationEndpoint) {

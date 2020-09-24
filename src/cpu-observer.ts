@@ -1,6 +1,6 @@
 import { HttpService } from "@nestjs/common";
 import { CpuObservationEndpoint, CpuObservationStatus } from 'cpu-monitoring-models';
-import { CpuUtilizationLogData, LogType, LogMessageFormat } from "logging-format";
+import { LogMessageFormat, LogType } from "logging-format";
 import { IssueLoggingService } from 'logging-module';
 
 /**
@@ -32,10 +32,10 @@ export class CpuObserver {
     }
 
     /**
-     * Stop the observer when not needed
+     * Clears intervall to stop observing
      */
     dispose() {
-        this.stopObserving();
+        clearInterval(this.interval);
     }
 
     /**
@@ -79,6 +79,22 @@ export class CpuObserver {
                 
                 status.message = message;
                 this.notify(status);
+            } else {
+                const message = `An unknown error occured while trying to reach ${url}`;
+                // Report Error 
+                this.logger.log({
+                    source: url,
+                    detector: "CPU Monitor",
+                    time: new Date().getTime(),
+                    type: LogType.ERROR,
+                    data: {
+                        expected: null,
+                        result: "Uknown error"
+                    },
+                });
+                
+                status.message = message;
+                this.notify(status);
             }
         }
     }
@@ -101,12 +117,5 @@ export class CpuObserver {
             },
             message: message
         } as LogMessageFormat);
-    }
-
-    /**
-     * Clears interval to stop observing the endpoint
-     */
-    private stopObserving() {
-        clearInterval(this.interval);
     }
 }

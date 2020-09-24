@@ -1,9 +1,8 @@
+import { HttpModule } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MonitorService } from './monitor.service';
-import { HttpService, HttpModule } from '@nestjs/common';
-import { IssueLoggingService } from 'logging-module';
 import { CpuObservationEndpoint } from 'cpu-monitoring-models';
-import { LoggingModule } from 'logging-module'
+import { LoggingModule } from 'logging-module';
+import { MonitorService } from './monitor.service';
 
 describe('MonitorService', () => {
     let monitorService: MonitorService;
